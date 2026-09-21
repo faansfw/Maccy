@@ -12,3 +12,8 @@
 "NumberOfCopies" = "Sao chép nhiều nhất";
 "SortByTooltip" = "Mặc định: Sao chép mới nhất.";
 "CurrentSizeTooltip" = "Dung lượng hiện đang chiếm trên ổ đĩa.";
+
+"VisibleSize" = "Visible:";
+"CollapseHistory" = "Collapse long history";
+"VisibleSizeTooltip" = "How many history rows stay visible before the rest is collapsed.\nDefault: 15.";
+"VisibleSizeDescription" = "The remaining entries hide behind a row showing how many there are. Searching always looks through the whole history.";

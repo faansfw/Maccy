@@ -58,11 +58,20 @@ struct StorageSettingsPane: View {
 
   @Default(.size) private var size
   @Default(.sortBy) private var sortBy
+  @Default(.collapseHistory) private var collapseHistory
+  @Default(.visibleHistorySize) private var visibleHistorySize
 
   @State private var viewModel = ViewModel()
   @State private var storageSize = Storage.shared.size
 
   private let sizeFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.minimum = 1
+    formatter.maximum = 999
+    return formatter
+  }()
+
+  private let visibleSizeFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.minimum = 1
     formatter.maximum = 999
@@ -107,6 +116,28 @@ struct StorageSettingsPane: View {
               storageSize = Storage.shared.size
             }
         }
+      }
+
+      Settings.Section(
+        bottomDivider: true,
+        label: { Text("VisibleSize", tableName: "StorageSettings") }
+      ) {
+        Toggle(isOn: $collapseHistory) {
+          Text("CollapseHistory", tableName: "StorageSettings")
+        }
+
+        HStack {
+          TextField("", value: $visibleHistorySize, formatter: visibleSizeFormatter)
+            .frame(width: 80)
+            .help(Text("VisibleSizeTooltip", tableName: "StorageSettings"))
+          Stepper("", value: $visibleHistorySize, in: 1...999)
+            .labelsHidden()
+        }
+        .disabled(!collapseHistory)
+
+        Text("VisibleSizeDescription", tableName: "StorageSettings")
+          .controlSize(.small)
+          .foregroundStyle(.gray)
       }
 
       Settings.Section(label: { Text("SortBy", tableName: "StorageSettings") }) {

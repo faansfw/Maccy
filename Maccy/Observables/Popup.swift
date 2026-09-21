@@ -85,6 +85,8 @@ class Popup {
     // Always called while tearing down the popup on the main thread.
     MainActor.assumeIsolated { FolderFlyoutPanel.shared.hide() }
     state = .toggle
+    // Always reopen with the history collapsed back to its configured size.
+    History.shared.historyOverflowExpanded = false
     KeyboardShortcuts.enable(.popup)
   }
 

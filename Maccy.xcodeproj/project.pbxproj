@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FEED00000000000000000200 /* FolderFlyoutPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED00000000000000000100 /* FolderFlyoutPanel.swift */; };
+		FEED00000000000000000006 /* SectionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED00000000000000000005 /* SectionRowView.swift */; };
 		FEED0000000000000000000A /* FoldersEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED00000000000000000009 /* FoldersEditorView.swift */; };
 		FEED00000000000000000010 /* FolderRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED0000000000000000000F /* FolderRegistry.swift */; };
 		0ABDD5122BB47F1E0054963B /* NSWorkspace+ApplicationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDD5112BB47F1E0054963B /* NSWorkspace+ApplicationName.swift */; };
@@ -184,6 +185,7 @@
 
 /* Begin PBXFileReference section */
 		FEED00000000000000000100 /* FolderFlyoutPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderFlyoutPanel.swift; sourceTree = "<group>"; };
+		FEED00000000000000000005 /* SectionRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionRowView.swift; sourceTree = "<group>"; };
 		FEED00000000000000000009 /* FoldersEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersEditorView.swift; sourceTree = "<group>"; };
 		FEED0000000000000000000F /* FolderRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRegistry.swift; sourceTree = "<group>"; };
 		088F4DA628BECBC40003AD19 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -696,6 +698,7 @@
 		DA19690C2C3EEF9300258481 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FEED00000000000000000005 /* SectionRowView.swift */,
 				2F1091D62F2B6E8100F5C454 /* AsyncView.swift */,
 				2FF2E94F2E7808420093D72C /* AppImageView.swift */,
 				DAA072DE2C41C63C006DDFD2 /* ConfirmationView.swift */,
@@ -1108,6 +1111,7 @@
 				FEED00000000000000000200 /* FolderFlyoutPanel.swift in Sources */,
 				FEED00000000000000000010 /* FolderRegistry.swift in Sources */,
 				FEED0000000000000000000A /* FoldersEditorView.swift in Sources */,
+				FEED00000000000000000006 /* SectionRowView.swift in Sources */,
 				DA19691C2C3F3EAC00258481 /* Collection+Surrounding.swift in Sources */,
 				DA1969142C3F11D600258481 /* PreviewItemView.swift in Sources */,
 				2FF2E9502E7808470093D72C /* AppImageView.swift in Sources */,

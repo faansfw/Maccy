@@ -24,6 +24,31 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     FolderRegistry.group(pinnedItems, folderOf: \.folderName)
   }
 
+  /// Set when the user expands the collapsed tail of the history.
+  /// Reset every time the popup is closed.
+  var historyOverflowExpanded: Bool = false {
+    didSet {
+      guard oldValue != historyOverflowExpanded else { return }
+
+      updateUnpinnedShortcuts()
+      AppState.shared.popup.needsResize = true
+    }
+  }
+
+  /// How many unpinned items are currently hidden behind the "show more" row.
+  var hiddenHistoryCount: Int {
+    unpinnedItems.filter(\.isCollapsed).count
+  }
+
+  /// The "show more" / "show less" row is only meaningful when collapsing is
+  /// enabled, no search is running and the history is actually longer
+  /// than the configured number of visible rows.
+  var historyOverflowRowVisible: Bool {
+    Defaults[.collapseHistory]
+      && searchQuery.isEmpty
+      && unpinnedItems.count > max(1, Defaults[.visibleHistorySize])
+  }
+
   var searchQuery: String = "" {
     didSet {
       throttler.throttle { [self] in
@@ -104,6 +129,19 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
         }
       }
     }
+
+    Task {
+      for await _ in Defaults.updates(.collapseHistory, initial: false) {
+        await refreshItems()
+      }
+    }
+
+    Task {
+      for await _ in Defaults.updates(.visibleHistorySize, initial: false) {
+        await refreshItems()
+      }
+    }
+
     Task {
       for await _ in Defaults.updates(.pinFolders, initial: false) {
         await refreshItems()
@@ -536,6 +574,12 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     for item in pinnedItems {
       // Items inside a folder are reached through the folder flyout only.
       item.isCollapsed = item.folderName.map { folders.contains($0) } ?? false
+    }
+
+    let collapse = Defaults[.collapseHistory] && searchQuery.isEmpty && !historyOverflowExpanded
+    let limit = max(1, Defaults[.visibleHistorySize])
+    for (index, item) in unpinnedItems.enumerated() {
+      item.isCollapsed = collapse && index >= limit
     }
   }
 

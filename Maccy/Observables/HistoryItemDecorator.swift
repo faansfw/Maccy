@@ -18,7 +18,11 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   var title: String = ""
   var attributedTitle: AttributedString?
 
-  var isVisible: Bool = true
+  /// Hidden from the main list: either the item lives inside a folder and is
+  /// only reachable through the folder flyout, or it sits past the visible
+  /// history limit.
+  var isCollapsed: Bool = false
+  var isVisible: Bool { !isCollapsed }
   var selectionIndex: Int = -1
   var isSelected: Bool {
     return selectionIndex != -1

@@ -13,8 +13,10 @@ struct HistoryListView: View {
   @Default(.previewDelay) private var previewDelay
   @Default(.showFooter) private var showFooter
 
+  /// All pinned rows -- `PinsView` decides what a collapsed folder hides,
+  /// so the folder headers stay visible.
   private var pinnedItems: [HistoryItemDecorator] {
-    appState.history.pinnedItems.filter(\.isVisible)
+    appState.history.pinnedItems
   }
   private var unpinnedItems: [HistoryItemDecorator] {
     appState.history.unpinnedItems.filter(\.isVisible)
@@ -25,6 +27,10 @@ struct HistoryListView: View {
 
   private var pinsVisible: Bool {
     return !pinnedItems.isEmpty
+  }
+
+  private var overflowRowVisible: Bool {
+    return appState.history.historyOverflowRowVisible
   }
 
   private var pasteStackVisible: Bool {
@@ -68,7 +74,7 @@ struct HistoryListView: View {
   var body: some View {
     let topPinsVisible = pinTo == .top && pinsVisible
     let bottomPinsVisible = pinTo == .bottom && pinsVisible
-    let historyEmpty = unpinnedItems.isEmpty
+    let historyEmpty = appState.history.unpinnedItems.isEmpty
     let topSeparatorVisible = !historyEmpty && (topPinsVisible || pasteStackVisible)
     let bottomSeparatorVisible = !historyEmpty && bottomPinsVisible
     let scrollTopPadding = topSeparatorVisible ? Popup.verticalSeparatorPadding : topPadding
@@ -100,8 +106,20 @@ struct HistoryListView: View {
 
     ScrollView {
       ScrollViewReader { proxy in
-        MultipleSelectionListView(items: unpinnedItems) { previous, item, next, index in
-          HistoryItemView(item: item, previous: previous, next: next, index: index)
+        VStack(spacing: 0) {
+          MultipleSelectionListView(items: unpinnedItems) { previous, item, next, index in
+            HistoryItemView(item: item, previous: previous, next: next, index: index)
+          }
+
+          if overflowRowVisible {
+            SectionRowView(
+              title: appState.history.historyOverflowExpanded ? "HistoryShowLess" : "HistoryShowMore",
+              count: appState.history.historyOverflowExpanded ? nil : appState.history.hiddenHistoryCount,
+              isExpanded: appState.history.historyOverflowExpanded
+            ) {
+              appState.history.historyOverflowExpanded.toggle()
+            }
+          }
         }
         .padding(.top, scrollTopPadding)
         .padding(.bottom, scrollBottomPadding)

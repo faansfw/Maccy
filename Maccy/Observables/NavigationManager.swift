@@ -236,6 +236,13 @@ class NavigationManager { // swiftlint:disable:this type_body_length
     if let historyItem = history.firstVisibleItem(where: { $0.id == lead }) {
       if let nextItem = history.visibleItem(after: historyItem) {
         selectFromKeyboardNavigation(item: nextItem)
+      } else if history.hiddenHistoryCount > 0 {
+        // Reaching the bottom of a collapsed history expands it instead of
+        // jumping straight into the footer.
+        history.historyOverflowExpanded = true
+        if let nextItem = history.visibleItem(after: historyItem) {
+          selectFromKeyboardNavigation(item: nextItem)
+        }
       } else if let nextItem = footer.firstVisibleItem {
         selectFromKeyboardNavigation(footerItem: nextItem)
       } else if allowCycle {

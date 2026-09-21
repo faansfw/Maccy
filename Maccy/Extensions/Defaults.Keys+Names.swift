@@ -80,4 +80,8 @@ extension Defaults.Keys {
   /// Folders grouping pinned items. Membership is stored on the item itself;
   /// this is just the ordered list of folder names.
   static let pinFolders = Key<[String]>("pinFolders", default: [])
+
+  /// Collapse the unpinned history after N rows into an expandable row.
+  static let collapseHistory = Key<Bool>("collapseHistory", default: true)
+  static let visibleHistorySize = Key<Int>("visibleHistorySize", default: 15)
 }

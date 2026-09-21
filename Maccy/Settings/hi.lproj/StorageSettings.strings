@@ -12,3 +12,8 @@
 "FirstCopiedAt" = "पहली प्रति का समय";
 "NumberOfCopies" = "प्रतियों की संख्या";
 "SortByTooltip" = "डिफ़ॉल्ट: अंतिम प्रति का समय।";
+
+"VisibleSize" = "Visible:";
+"CollapseHistory" = "Collapse long history";
+"VisibleSizeTooltip" = "How many history rows stay visible before the rest is collapsed.\nDefault: 15.";
+"VisibleSizeDescription" = "The remaining entries hide behind a row showing how many there are. Searching always looks through the whole history.";
