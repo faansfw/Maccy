@@ -2,7 +2,9 @@
 > **This is a fork, not the original Maccy.** It is based on tag `2.7.1` and adds folders
 > and manual ordering for pinned items, drops the hotkey (and the 21-item limit) that pins
 > used to carry, collapses a long history, and removes Sparkle. See **[FORK.md](FORK.md)**
-> for what changed and how to build it — описание изменений и инструкция по сборке.
+> for what changed, and grab a prebuilt universal build under
+> [Releases](https://github.com/faansfw/Maccy/releases/latest) — описание изменений,
+> готовая сборка и инструкция по сборке из исходников.
 > The original is at [p0deje/Maccy](https://github.com/p0deje/Maccy).
 
 > [!WARNING]

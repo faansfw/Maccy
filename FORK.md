@@ -4,8 +4,9 @@
 > (based on tag `2.7.1`), built as `2.7.1-mod`. It adds folders and manual ordering for
 > pinned items, removes the single-letter hotkey that pins used to carry (and with it the
 > 21-pin limit), collapses a long history behind a "show more" row, and strips Sparkle so
-> an official release can never overwrite an ad-hoc signed build. No binaries are
-> published — build it yourself, see [Сборка](#сборка). Upstream is MIT licensed and so is
+> an official release can never overwrite an ad-hoc signed build. A prebuilt universal binary is
+> published under Releases; it is ad-hoc signed, so it needs
+> `xattr -dr com.apple.quarantine` after download. Building from source works too. Upstream is MIT licensed and so is
 > this fork; all credit for Maccy goes to [Alex Rodionov](https://github.com/p0deje).
 
 Форк сделан под один сценарий: когда закреплённых записей не десяток, а много,
@@ -48,25 +49,52 @@
 Sparkle удалён из проекта целиком. Обновление = пересборка из исходников.
 Причина в [Ограничениях](#ограничения-и-предупреждения).
 
-## Сборка
+## Установка
 
-Нужен **Xcode 27 beta или новее** — командные средства разработки с Swift 5.8
-не подойдут. Зависимости подтянутся сами через Swift Package Manager.
+### Готовая сборка
+
+Скачайте `Maccy-2.7.1-mod.zip` на странице
+[Releases](https://github.com/faansfw/Maccy/releases/latest), распакуйте и
+перенесите `Maccy.app` в «Программы». Дальше два обязательных шага:
+
+```bash
+# 1. Снять карантин. Сборка подписана ad-hoc, и без этого macOS откажется
+#    её запускать со словами, что приложение повреждено.
+xattr -dr com.apple.quarantine /Applications/Maccy.app
+
+# 2. Запустить
+open -a Maccy
+```
+
+После первого запуска выдайте доступ в **Системные настройки → Конфиденциальность
+и безопасность → Универсальный доступ**, иначе вставка работать не будет.
+
+Сборка универсальная — Apple Silicon и Intel, macOS 14 Sonoma или новее.
+Контрольная сумма архива указана в описании релиза.
+
+### Сборка из исходников
+
+Нужен **Xcode 27 beta или новее** — командных средств разработки со Swift 5.8
+не хватит. Зависимости подтянутся сами через Swift Package Manager.
 
 ```bash
 git clone https://github.com/faansfw/Maccy.git
 cd Maccy
-git checkout mod
 
 export DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer
 xcodebuild -project Maccy.xcodeproj -scheme Maccy -configuration Release \
   -derivedDataPath ./DerivedData \
-  -destination 'platform=macOS,arch=arm64' \
+  -destination 'generic/platform=macOS' \
   CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM="" \
-  PROVISIONING_PROFILE_SPECIFIER="" MARKETING_VERSION="2.7.1-mod" build
+  PROVISIONING_PROFILE_SPECIFIER="" build
 ```
 
-Установка (сначала сохраните копию текущего приложения, если оно уже стоит):
+Клонируется сразу ветка `mod` — она в репозитории основная. `generic/platform=macOS`
+собирает универсальный бинарник; для сборки только под свою машину можно
+указать `-destination 'platform=macOS,arch=arm64'`, это заметно быстрее.
+
+Установка собранного (сначала сохраните копию текущего приложения, если оно уже
+стоит):
 
 ```bash
 pkill -x Maccy
@@ -75,14 +103,15 @@ ditto ./DerivedData/Build/Products/Release/Maccy.app /Applications/Maccy.app
 open -a Maccy
 ```
 
-После первого запуска выдайте доступ в **Системные настройки → Конфиденциальность
-и безопасность → Универсальный доступ**, иначе вставка работать не будет.
+Своей сборке карантин снимать не нужно — он появляется только у скачанного файла.
 
 ## Ограничения и предупреждения
 
-- **Подпись ad-hoc.** macOS считает такую сборку другим приложением, поэтому
-  доступ в «Универсальный доступ» приходится выдавать заново после каждой замены
-  приложения.
+- **Подпись ad-hoc, без нотаризации.** Во-первых, скачанному архиву нужно снимать
+  карантин вручную. Во-вторых, macOS считает такую сборку другим приложением,
+  поэтому доступ в «Универсальный доступ» приходится выдавать заново после каждой
+  замены приложения. Подписать как положено можно только с платным Apple Developer
+  ID — его нет, поэтому доверять сборке приходится на слово.
 - **Не ставьте Maccy поверх из Homebrew или с сайта** — официальная сборка затрёт
   форк. Ровно поэтому из проекта вырезан Sparkle.
 - **История сохраняется.** Новые поля добавляются к существующей модели данных,
