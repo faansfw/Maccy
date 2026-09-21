@@ -74,4 +74,10 @@ extension Defaults.Keys {
   static let showApplicationIcons = Key<Bool>("showApplicationIcons", default: false)
   static let showHexColorSwatch = Key<Bool>("showHexColorSwatch", default: true)
   static let previewWidth = Key<CGFloat>("previewWidth", default: 400)
+
+  // MARK: - Fork additions
+
+  /// Folders grouping pinned items. Membership is stored on the item itself;
+  /// this is just the ordered list of folder names.
+  static let pinFolders = Key<[String]>("pinFolders", default: [])
 }

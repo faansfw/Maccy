@@ -24,9 +24,23 @@ class Sorter {
   }
 
   func sort(_ items: [HistoryItem], by: By = Defaults[.sortBy]) -> [HistoryItem] {
-    return items
-      .sorted(by: { return bySortingAlgorithm($0, $1, by) })
-      .sorted(by: byPinned)
+    let pinned = items
+      .enumerated()
+      .filter { $0.element.pin != nil }
+      // Index breaks ties so equal orders keep their relative position.
+      .sorted { ($0.element.order, $0.offset) < ($1.element.order, $1.offset) }
+      .map(\.element)
+
+    let unpinned = items
+      .filter { $0.pin == nil }
+      .sorted { bySortingAlgorithm($0, $1, by) }
+
+    return Defaults[.pinTo] == .bottom ? unpinned + pinned : pinned + unpinned
+  }
+
+  /// Order to give a newly pinned item so that it lands at the end.
+  func nextPinOrder(in items: [HistoryItem]) -> Int {
+    (items.filter { $0.pin != nil }.map(\.order).max() ?? 0) + 1
   }
 
   private func bySortingAlgorithm(_ lhs: HistoryItem, _ rhs: HistoryItem, _ by: By) -> Bool {
@@ -40,13 +54,6 @@ class Sorter {
     }
   }
 
-  private func byPinned(_ lhs: HistoryItem, _ rhs: HistoryItem) -> Bool {
-    if Defaults[.pinTo] == .bottom {
-      return (lhs.pin == nil) && (rhs.pin != nil)
-    } else {
-      return (lhs.pin != nil) && (rhs.pin == nil)
-    }
-  }
 }
 // swiftlint:enable identifier_name
 // swiftlint:enable type_name

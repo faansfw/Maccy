@@ -82,6 +82,8 @@ class Popup {
   }
 
   func reset() {
+    // Always called while tearing down the popup on the main thread.
+    MainActor.assumeIsolated { FolderFlyoutPanel.shared.hide() }
     state = .toggle
     KeyboardShortcuts.enable(.popup)
   }

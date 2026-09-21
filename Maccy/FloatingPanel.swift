@@ -201,9 +201,14 @@ class FloatingPanel<Content: View>: NSPanel, NSWindowDelegate {
   override func resignKey() {
     super.resignKey()
     // Don't hide if confirmation is shown.
-    if NSApp.alertWindow == nil {
-      close()
-    }
+    guard NSApp.alertWindow == nil else { return }
+
+    // The folder flyout is a non-key child window, but guard against it
+    // grabbing focus anyway -- otherwise opening a folder closes the popup.
+    guard !FolderFlyoutPanel.shared.isKeyWindow else { return }
+
+    FolderFlyoutPanel.shared.hide()
+    close()
   }
 
   override func close() {

@@ -4,4 +4,20 @@
 "Content" = "内容";
 "ContentIsNotText" = "不可编辑的内容（图像或文件）";
 "RichTextEditWarning" = "编辑将放弃所有格式化。";
-"PinCustomizationDescription" = "您可以自定义任何置顶项目的热键、标题和内容。\n要编辑，请双击该项目并输入新值。";
+
+"Folder" = "Folder";
+"Folders" = "Folders";
+"NoFolder" = "— none —";
+"NoFolders" = "No folders yet.";
+"NewFolderName" = "New folder name";
+"AddFolder" = "Add folder";
+"HistoryShowMore" = "Show more";
+"HistoryShowLess" = "Show less";
+
+"FoldersDescription" = "Pinned items sit at the top of the popup. Assign one to a folder and it moves into that folder's row instead, opening in a list to the side on hover or click.";
+"MoveUpTooltip" = "Move the selected item up";
+"MoveDownTooltip" = "Move the selected item down";
+"DeletePinTooltip" = "Unpin and delete the selected item";
+
+"NoFolderSection" = "Without a folder";
+"PinCustomizationDescription" = "Double-click a name or its content to edit it; only plain text can be edited. Drag rows to reorder them inside a section, and use the folder column to move an item to another folder.";

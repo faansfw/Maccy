@@ -29,6 +29,10 @@ class HistoryItem {
   var numberOfCopies: Int = 1
   var pin: String?
   var title = ""
+  /// Name of the folder this pinned item belongs to, `nil` for loose items.
+  var folderName: String?
+  /// Manual position among the pinned items. Unused while unpinned.
+  var order: Int = 0
 
   @Relationship(deleteRule: .cascade, inverse: \HistoryItemContent.item)
   var contents: [HistoryItemContent] = []

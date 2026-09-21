@@ -1,4 +1,4 @@
-import AppKit.NSWorkspace
+import AppKit
 import Defaults
 import Foundation
 import Observation
@@ -55,6 +55,9 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
 
   var isPinned: Bool { item.pin != nil }
   var isUnpinned: Bool { item.pin == nil }
+
+  /// Folder this item belongs to, or `nil` when it sits outside any folder.
+  var folderName: String? { item.folderName }
 
   func hash(into hasher: inout Hasher) {
     // We need to hash title and attributedTitle, so SwiftUI knows it needs to update the view if they chage
@@ -180,6 +183,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   func togglePin() {
     if item.pin != nil {
       item.pin = nil
+      item.folderName = nil
     } else {
       item.pin = HistoryItem.newPinMarker
     }

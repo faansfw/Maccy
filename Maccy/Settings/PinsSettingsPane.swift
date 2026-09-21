@@ -1,3 +1,4 @@
+import Defaults
 import SwiftData
 import SwiftUI
 
@@ -91,53 +92,187 @@ struct PinValueView: View {
   }
 }
 
+/// One pinned item inside the hierarchical list.
+private struct PinRowView: View {
+  @Bindable var item: HistoryItem
+  let folders: [String]
+
+  var body: some View {
+    HStack(spacing: 8) {
+      Image(systemName: "line.3.horizontal")
+        .foregroundStyle(.tertiary)
+        .font(.caption)
+
+      PinTitleView(item: item)
+        .frame(minWidth: 120, idealWidth: 150)
+
+      PinValueView(item: item)
+        .frame(maxWidth: .infinity)
+
+      FolderPickerView(
+        folders: folders,
+        folderName: Binding(
+          get: { item.folderName },
+          set: { item.folderName = $0 }
+        ),
+        onChange: { AppState.shared.history.persistAndRefresh() }
+      )
+      .frame(width: 130)
+    }
+  }
+}
+
 struct PinsSettingsPane: View {
   @Environment(AppState.self) private var appState
   @Environment(\.modelContext) private var modelContext
 
-  @Query(filter: #Predicate<HistoryItem> { $0.pin != nil }, sort: \.firstCopiedAt)
+  @Query(filter: #Predicate<HistoryItem> { $0.pin != nil }, sort: \.order)
   private var items: [HistoryItem]
 
-  @State private var availablePins: [String] = []
+  @Default(.pinFolders) private var folders
+
   @State private var selection: PersistentIdentifier?
+
+  private var sections: (loose: [HistoryItem], folders: [FolderSection<HistoryItem>]) {
+    FolderRegistry.group(items, folderOf: \.folderName)
+  }
+
+  /// The items that live alongside the selected one, i.e. its own section.
+  private var selectedSiblings: [HistoryItem] {
+    let sections = sections
+    if sections.loose.contains(where: { $0.persistentModelID == selection }) {
+      return sections.loose
+    }
+
+    return sections.folders
+      .first { $0.items.contains { $0.persistentModelID == selection } }?
+      .items ?? []
+  }
+
+  private var selectedIndex: Int? {
+    selectedSiblings.firstIndex { $0.persistentModelID == selection }
+  }
 
   var body: some View {
     VStack(alignment: .leading) {
-      Table(items, selection: $selection) {
-        TableColumn(Text("Key", tableName: "PinsSettings")) { item in
-          PinPickerView(item: item, availablePins: availablePins)
-            .onChange(of: item.pin) {
-              availablePins = HistoryItem.availablePins(in: items)
+      let sections = sections
+
+      List(selection: $selection) {
+        Section {
+          ForEach(sections.loose, id: \.persistentModelID) { item in
+            PinRowView(item: item, folders: folders)
+          }
+          .onMove { source, destination in
+            move(sections.loose, from: source, to: destination)
+          }
+        } header: {
+          Text("NoFolderSection", tableName: "PinsSettings")
+        }
+
+        ForEach(sections.folders, id: \.name) { folder in
+          Section {
+            ForEach(folder.items, id: \.persistentModelID) { item in
+              PinRowView(item: item, folders: folders)
             }
-        }
-        .width(60)
-
-        TableColumn(Text("Alias", tableName: "PinsSettings")) { item in
-          PinTitleView(item: item)
-        }
-
-        TableColumn(Text("Content", tableName: "PinsSettings")) { item in
-          PinValueView(item: item)
+            .onMove { source, destination in
+              move(folder.items, from: source, to: destination)
+            }
+          } header: {
+            Label(folder.name, systemImage: "folder")
+          }
         }
       }
-      .onAppear {
-        availablePins = HistoryItem.availablePins(in: items)
-      }
-      .onDeleteCommand {
-        guard let selection,
-              let item = appState.history.items.first(where: { $0.item.id == selection }) else {
-          return
-        }
+      .frame(minHeight: 220)
+      .onAppear(perform: normalizeOrder)
+      .onDeleteCommand(perform: deleteSelected)
 
-        appState.history.delete(item)
+      HStack(spacing: 6) {
+        Button { move(by: -1) } label: {
+          Image(systemName: "chevron.up")
+        }
+        .disabled(selectedIndex == nil || selectedIndex == 0)
+        .help(Text("MoveUpTooltip", tableName: "PinsSettings"))
+
+        Button { move(by: 1) } label: {
+          Image(systemName: "chevron.down")
+        }
+        .disabled(selectedIndex == nil || selectedIndex == selectedSiblings.count - 1)
+        .help(Text("MoveDownTooltip", tableName: "PinsSettings"))
+
+        Button(action: deleteSelected) {
+          Image(systemName: "minus")
+        }
+        .disabled(selection == nil)
+        .help(Text("DeletePinTooltip", tableName: "PinsSettings"))
+
+        Spacer()
       }
 
       Text("PinCustomizationDescription", tableName: "PinsSettings")
         .foregroundStyle(.gray)
         .controlSize(.small)
+
+      Divider()
+
+      Text("Folders", tableName: "PinsSettings")
+        .font(.subheadline)
+
+      FoldersEditorView(folders: $folders) { oldName, newName in
+        AppState.shared.history.reassignPinFolder(from: oldName, to: newName)
+      }
+
+      Text("FoldersDescription", tableName: "PinsSettings")
+        .foregroundStyle(.gray)
+        .controlSize(.small)
     }
-    .frame(minWidth: 500, minHeight: 400)
+    .frame(minWidth: 680, minHeight: 560)
     .padding()
+  }
+
+  /// Items pinned before this build all carry order 0, so give them their
+  /// current positions once to make reordering meaningful.
+  private func normalizeOrder() {
+    guard items.contains(where: { $0.order == 0 }) else { return }
+
+    for (index, item) in items.enumerated() {
+      item.order = index + 1
+    }
+    AppState.shared.history.persistAndRefresh()
+  }
+
+  /// Reorders within one section by redistributing that section's own order
+  /// values, so items in other sections keep their positions.
+  private func move(_ siblings: [HistoryItem], from source: IndexSet, to destination: Int) {
+    var reordered = siblings
+    reordered.move(fromOffsets: source, toOffset: destination)
+
+    for (item, order) in zip(reordered, siblings.map(\.order).sorted()) {
+      item.order = order
+    }
+    AppState.shared.history.persistAndRefresh()
+  }
+
+  private func move(by offset: Int) {
+    let siblings = selectedSiblings
+    guard let index = selectedIndex else { return }
+
+    let newIndex = index + offset
+    guard siblings.indices.contains(newIndex) else { return }
+
+    let order = siblings[index].order
+    siblings[index].order = siblings[newIndex].order
+    siblings[newIndex].order = order
+    AppState.shared.history.persistAndRefresh()
+  }
+
+  private func deleteSelected() {
+    guard let selection,
+          let item = appState.history.items.first(where: { $0.item.id == selection }) else {
+      return
+    }
+
+    self.selection = nil
+    appState.history.delete(item)
   }
 }
 

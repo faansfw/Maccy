@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FEED00000000000000000200 /* FolderFlyoutPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED00000000000000000100 /* FolderFlyoutPanel.swift */; };
+		FEED0000000000000000000A /* FoldersEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED00000000000000000009 /* FoldersEditorView.swift */; };
+		FEED00000000000000000010 /* FolderRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED0000000000000000000F /* FolderRegistry.swift */; };
 		0ABDD5122BB47F1E0054963B /* NSWorkspace+ApplicationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDD5112BB47F1E0054963B /* NSWorkspace+ApplicationName.swift */; };
 		2F0EC7792E7727E3003E2EA9 /* HeightReaderModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0EC7782E7727E3003E2EA9 /* HeightReaderModifier.swift */; };
 		2F0EC77B2E772899003E2EA9 /* PinsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0EC77A2E772899003E2EA9 /* PinsView.swift */; };
@@ -180,6 +183,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FEED00000000000000000100 /* FolderFlyoutPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderFlyoutPanel.swift; sourceTree = "<group>"; };
+		FEED00000000000000000009 /* FoldersEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersEditorView.swift; sourceTree = "<group>"; };
+		FEED0000000000000000000F /* FolderRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRegistry.swift; sourceTree = "<group>"; };
 		088F4DA628BECBC40003AD19 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0ABDD5112BB47F1E0054963B /* NSWorkspace+ApplicationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSWorkspace+ApplicationName.swift"; sourceTree = "<group>"; };
 		11680E44DAF848ADB8BA358E /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/PinsSettings.strings; sourceTree = "<group>"; };
@@ -669,6 +675,7 @@
 		DA181178247D150B00066D55 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				FEED00000000000000000009 /* FoldersEditorView.swift */,
 				DA9C3C642C211B5F0056795D /* AdvancedSettingsPane.swift */,
 				DA740D782C21E6B0007B1A36 /* AdvancedSettings.strings */,
 				DA689FC32C1CF0F00009B887 /* AppearanceSettingsPane.swift */,
@@ -825,6 +832,8 @@
 		DAEE38451E3DBEB100DD2966 /* Maccy */ = {
 			isa = PBXGroup;
 			children = (
+				FEED00000000000000000100 /* FolderFlyoutPanel.swift */,
+				FEED0000000000000000000F /* FolderRegistry.swift */,
 				2FBB7A252B5FECBB00C65BBE /* Extensions */,
 				DA68F91F28BD819E007E2F25 /* Intents */,
 				DA05B50F2C234C1C006980FE /* Models */,
@@ -1096,6 +1105,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEED00000000000000000200 /* FolderFlyoutPanel.swift in Sources */,
+				FEED00000000000000000010 /* FolderRegistry.swift in Sources */,
+				FEED0000000000000000000A /* FoldersEditorView.swift in Sources */,
 				DA19691C2C3F3EAC00258481 /* Collection+Surrounding.swift in Sources */,
 				DA1969142C3F11D600258481 /* PreviewItemView.swift in Sources */,
 				2FF2E9502E7808470093D72C /* AppImageView.swift in Sources */,

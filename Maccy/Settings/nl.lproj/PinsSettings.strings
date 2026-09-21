@@ -4,4 +4,20 @@
 "Content" = "Inhoud";
 "ContentIsNotText" = "Niet bewerkbare inhoud (afbeelding of bestand)";
 "RichTextEditWarning" = "Bewerken verwijdert alle opmaak.";
-"PinCustomizationDescription" = "Je kunt de sneltoets, titel en inhoud van elk vastgemaakt item aanpassen.\nOm te bewerken dubbelklikt u op het item en voert u een nieuwe waarde in.";
+
+"Folder" = "Folder";
+"Folders" = "Folders";
+"NoFolder" = "— none —";
+"NoFolders" = "No folders yet.";
+"NewFolderName" = "New folder name";
+"AddFolder" = "Add folder";
+"HistoryShowMore" = "Show more";
+"HistoryShowLess" = "Show less";
+
+"FoldersDescription" = "Pinned items sit at the top of the popup. Assign one to a folder and it moves into that folder's row instead, opening in a list to the side on hover or click.";
+"MoveUpTooltip" = "Move the selected item up";
+"MoveDownTooltip" = "Move the selected item down";
+"DeletePinTooltip" = "Unpin and delete the selected item";
+
+"NoFolderSection" = "Without a folder";
+"PinCustomizationDescription" = "Double-click a name or its content to edit it; only plain text can be edited. Drag rows to reorder them inside a section, and use the folder column to move an item to another folder.";

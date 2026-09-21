@@ -19,6 +19,11 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
   var pinnedItems: [HistoryItemDecorator] { items.filter(\.isPinned) }
   var unpinnedItems: [HistoryItemDecorator] { items.filter(\.isUnpinned) }
 
+  /// Pinned items shown directly at the top, and the folder sections below them.
+  var pinnedSections: (loose: [HistoryItemDecorator], folders: [FolderSection<HistoryItemDecorator>]) {
+    FolderRegistry.group(pinnedItems, folderOf: \.folderName)
+  }
+
   var searchQuery: String = "" {
     didSet {
       throttler.throttle { [self] in
@@ -99,6 +104,20 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
         }
       }
     }
+    Task {
+      for await _ in Defaults.updates(.pinFolders, initial: false) {
+        await refreshItems()
+      }
+    }
+  }
+
+  /// Rebuilds the visible list from the stored history. Everything that
+  /// mutates `all` funnels through here.
+  @MainActor
+  func refreshItems() {
+    items = all
+    updateUnpinnedShortcuts()
+    AppState.shared.popup.needsResize = true
   }
 
   @MainActor
@@ -151,6 +170,11 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
       item.firstCopiedAt = existingHistoryItem.firstCopiedAt
       item.numberOfCopies += existingHistoryItem.numberOfCopies
       item.pin = existingHistoryItem.pin
+      // Copying a pinned item re-enters history as a "new" item; carry the fork's
+      // pin metadata over too, otherwise the item drops out of its folder and
+      // loses its manual position.
+      item.folderName = existingHistoryItem.folderName
+      item.order = existingHistoryItem.order
       item.title = existingHistoryItem.title
       if !item.fromMaccy {
         item.application = existingHistoryItem.application
@@ -192,9 +216,7 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
         all.insert(itemDecorator, at: index)
       }
 
-      items = all
-      updateUnpinnedShortcuts()
-      AppState.shared.popup.needsResize = true
+      refreshItems()
     }
 
     return itemDecorator
@@ -287,6 +309,27 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     Task {
       AppState.shared.popup.needsResize = true
     }
+  }
+
+  /// Flushes pending history edits made from the settings panes.
+  @MainActor
+  func persistAndRefresh() {
+    Storage.shared.context.processPendingChanges()
+    try? Storage.shared.context.save()
+    refreshItems()
+  }
+
+  /// Moves every pinned item out of `oldName` -- into `newName` on a rename,
+  /// or out of any folder when the folder was deleted.
+  @MainActor
+  func reassignPinFolder(from oldName: String, to newName: String?) {
+    for item in all where item.item.folderName == oldName {
+      item.item.folderName = newName
+    }
+
+    Storage.shared.context.processPendingChanges()
+    try? Storage.shared.context.save()
+    refreshItems()
   }
 
   @MainActor
@@ -419,7 +462,12 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
   func togglePin(_ item: HistoryItemDecorator?) {
     guard let item else { return }
 
+    let wasPinned = item.isPinned
     item.togglePin()
+    if !wasPinned {
+      // Newly pinned items go to the end of the manual order.
+      item.item.order = sorter.nextPinOrder(in: all.map(\.item))
+    }
 
     let sortedItems = sorter.sort(all.map(\.item))
     if let currentIndex = all.firstIndex(of: item),
@@ -481,7 +529,19 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     item.item.title = title
   }
 
+  /// Hides items whose folder is collapsed and, when enabled, everything past
+  /// the configured number of visible history rows.
+  private func updateCollapsedState() {
+    let folders = Set(FolderRegistry.folders)
+    for item in pinnedItems {
+      // Items inside a folder are reached through the folder flyout only.
+      item.isCollapsed = item.folderName.map { folders.contains($0) } ?? false
+    }
+  }
+
   private func updateUnpinnedShortcuts() {
+    updateCollapsedState()
+
     let visibleUnpinnedItems = unpinnedItems.filter(\.isVisible)
     for item in visibleUnpinnedItems {
       item.shortcuts = []
