@@ -6,50 +6,9 @@ import Vision
 
 @Model
 class HistoryItem {
-  static var supportedPins: Set<String> {
-    // "a" reserved for select all
-    // "q" reserved for quit
-    // "v" reserved for paste
-    // "w" reserved for close window
-    // "z" reserved for undo/redo
-    var keys = Set([
-      "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
-      "m", "n", "o", "p", "r", "s", "t", "u", "x", "y"
-    ])
-
-    if let deleteKey = KeyChord.deleteKey,
-       let character = Sauce.shared.character(for: Int(deleteKey.QWERTYKeyCode), cocoaModifiers: []) {
-      keys.remove(character)
-    }
-
-    if let pinKey = KeyChord.pinKey,
-       let character = Sauce.shared.character(for: Int(pinKey.QWERTYKeyCode), cocoaModifiers: []) {
-      keys.remove(character)
-    }
-    if let previewKey = KeyChord.previewKey,
-       let character = Sauce.shared.character(for: Int(previewKey.QWERTYKeyCode), cocoaModifiers: []) {
-      keys.remove(character)
-    }
-
-    return keys
-  }
-
-  @MainActor
-  static var availablePins: [String] {
-    availablePins(in: History.shared.all.compactMap {
-      if $0.isPinned { return $0.item }
-      return nil
-    })
-  }
-
-  @MainActor
-  static func availablePins(in items: [HistoryItem]) -> [String] {
-    let assignedPins = Set(items.compactMap(\.pin))
-    return Array(supportedPins.subtracting(assignedPins))
-  }
-
-  @MainActor
-  static var randomAvailablePin: String { availablePins.randomElement() ?? "" }
+  /// Marker stored in `pin` for pinned items. Pins used to double as hotkey
+  /// assignments; that was dropped, so any unique non-nil value will do.
+  static var newPinMarker: String { UUID().uuidString }
 
   private static let transientTypes: [String] = [
     NSPasteboard.PasteboardType.modified.rawValue,

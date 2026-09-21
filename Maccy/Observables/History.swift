@@ -466,10 +466,10 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
   }
 
   private func updateShortcuts() {
+    // Pinned items no longer get their own hotkey; only the numbered
+    // shortcuts on the visible history remain.
     for item in pinnedItems {
-      if let pin = item.item.pin {
-        item.shortcuts = KeyShortcut.create(character: pin)
-      }
+      item.shortcuts = []
     }
 
     updateUnpinnedShortcuts()

@@ -1,26 +1,6 @@
 import SwiftData
 import SwiftUI
 
-struct PinPickerView: View {
-  @Bindable var item: HistoryItem
-  var availablePins: [String]
-
-  var body: some View {
-    if let pin = item.pin {
-      // Ensure unique pins for ForEach
-      let uniquePins = Array(Set(availablePins + [pin])).sorted()
-      Picker("", selection: $item.pin) {
-        ForEach(uniquePins, id: \.self) { pin in
-          Text(pin)
-            .tag(pin as String?)
-        }
-      }
-      .controlSize(.small)
-      .labelsHidden()
-    }
-  }
-}
-
 struct PinTitleView: View {
   @Bindable var item: HistoryItem
 

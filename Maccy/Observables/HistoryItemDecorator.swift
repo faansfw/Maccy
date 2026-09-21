@@ -71,7 +71,6 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
     self.title = item.title
     self.applicationImage = ApplicationImageCache.shared.getImage(item: item)
 
-    synchronizeItemPin()
     synchronizeItemTitle()
   }
 
@@ -182,21 +181,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
     if item.pin != nil {
       item.pin = nil
     } else {
-      let pin = HistoryItem.randomAvailablePin
-      item.pin = pin
-    }
-  }
-
-  private func synchronizeItemPin() {
-    _ = withObservationTracking {
-      item.pin
-    } onChange: {
-      DispatchQueue.main.async {
-        if let pin = self.item.pin {
-          self.shortcuts = KeyShortcut.create(character: pin)
-        }
-        self.synchronizeItemPin()
-      }
+      item.pin = HistoryItem.newPinMarker
     }
   }
 
