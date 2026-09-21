@@ -1,21 +1,22 @@
-> [!NOTE]
-> **This is a fork, not the original Maccy.** It is based on tag `2.7.1` and adds folders
-> and manual ordering for pinned items, drops the hotkey (and the 21-item limit) that pins
-> used to carry, collapses a long history, and removes Sparkle. See **[FORK.md](FORK.md)**
-> for what changed, and grab a prebuilt universal build under
-> [Releases](https://github.com/faansfw/Maccy/releases/latest) — описание изменений,
-> готовая сборка и инструкция по сборке из исходников.
-> The original is at [p0deje/Maccy](https://github.com/p0deje/Maccy).
+> [!IMPORTANT]
+> **This is a fork, not the original Maccy.** Based on tag `2.7.1`, it adds folders and
+> manual ordering for pinned items, drops the per-pin hotkey (and with it the 21-pin
+> limit), collapses a long history, and removes Sparkle. Install it from
+> **[Releases](https://github.com/faansfw/Maccy/releases/latest)** — *not* from Homebrew
+> or maccy.app, which would replace it with the original.
+> The original is [p0deje/Maccy](https://github.com/p0deje/Maccy) by Alex Rodionov.
+>
+> 🇷🇺 **[FORK.md](FORK.md)** — что изменено, как установить и как собрать, на русском.
 
 > [!WARNING]
 > **Beware of fake websites impersonating Maccy.** Malicious sites (such as `maccyapp.net` and `maccyapp.com`) distribute malware disguised as Maccy. [**maccy.app**](https://maccy.app) is the **only** official website.
 
 <img width="128px" src="https://maccy.app/img/maccy/Logo.png" alt="Logo" />
 
-# [Maccy](https://maccy.app)
+# Maccy 2.7.1-mod
 
-[![Downloads](https://img.shields.io/github/downloads/p0deje/Maccy/total.svg)](https://github.com/p0deje/Maccy/releases/latest)
-[![Build Status](https://img.shields.io/bitrise/716921b669780314/master?token=3pMiCb5dpFzlO-7jTYtO3Q)](https://app.bitrise.io/app/716921b669780314)
+[![Latest release](https://img.shields.io/github/v/release/faansfw/Maccy?label=release)](https://github.com/faansfw/Maccy/releases/latest)
+[![Upstream](https://img.shields.io/badge/fork_of-p0deje%2FMaccy_2.7.1-lightgrey)](https://github.com/p0deje/Maccy)
 
 Maccy is a lightweight clipboard manager for macOS. It keeps the history of what you copy
 and lets you quickly navigate, search, and use previous clipboard contents.
@@ -51,13 +52,40 @@ Maccy works on macOS Sonoma 14 or higher.
 * Native UI
 * Open source and free
 
+Added by this fork:
+
+* Folders for pinned items, opening in a panel beside the window
+* Manual ordering of pinned items, with no limit on how many you pin
+* A long history collapses behind a "show more" row
+
 ## Install
 
-Download the latest version from the [releases](https://github.com/p0deje/Maccy/releases/latest) page, or use [Homebrew](https://brew.sh/):
+> [!WARNING]
+> `brew install maccy` and the download on maccy.app install the **original** Maccy and
+> will overwrite this fork. Use the steps below instead.
+> Эта сборка ставится только отсюда — Homebrew и maccy.app поставят оригинал.
+
+Download `Maccy-2.7.1-mod.zip` from the
+[latest release](https://github.com/faansfw/Maccy/releases/latest), unpack it and move
+`Maccy.app` to Applications. The build is universal (Apple Silicon and Intel) and needs
+macOS 14 Sonoma or higher.
+
+It is signed ad-hoc rather than notarized, so macOS quarantines it on download and will
+claim the app is damaged until you clear that:
 
 ```sh
-brew install maccy
+xattr -dr com.apple.quarantine /Applications/Maccy.app
+open -a Maccy
 ```
+
+Then add Maccy under **System Settings → Privacy & Security → Accessibility**, or it
+will not be able to paste. You have to do this again after every update, because an
+ad-hoc signature makes macOS treat each build as a different app.
+
+Prefer to build it yourself? See [FORK.md](FORK.md#сборка-из-исходников) — it takes
+Xcode 27 beta and one `xcodebuild` command.
+
+Русская инструкция по установке — в [FORK.md](FORK.md#установка).
 
 ## Usage
 
@@ -68,11 +96,13 @@ brew install maccy
 5. To choose the history item and paste without formatting, press <kbd>OPTION (⌥)</kbd> + <kbd>SHIFT (⇧)</kbd> + <kbd>ENTER</kbd>, or <kbd>OPTION (⌥)</kbd> + <kbd>SHIFT (⇧)</kbd> + <kbd>CLICK</kbd> the item, or use <kbd>OPTION (⌥)</kbd> + <kbd>SHIFT (⇧)</kbd> + `n` shortcut.
 6. To delete the history item, press <kbd>OPTION (⌥)</kbd> + <kbd>DELETE (⌫)</kbd>.
 7. To see the full text of the history item, wait a couple of seconds for tooltip.
-8. To pin the history item so that it remains on top of the list, press <kbd>OPTION (⌥)</kbd> + <kbd>P</kbd>. The item will be moved to the top with a random but permanent keyboard shortcut. To unpin it, press <kbd>OPTION (⌥)</kbd> + <kbd>P</kbd> again.
-9. To clear all unpinned items, select _Clear_ in the menu, or press <kbd>OPTION (⌥)</kbd> + <kbd>COMMAND (⌘)</kbd> + <kbd>DELETE (⌫)</kbd>. To clear all items including pinned, select _Clear_ in the menu with  <kbd>OPTION (⌥)</kbd> pressed, or press <kbd>SHIFT (⇧)</kbd> + <kbd>OPTION (⌥)</kbd> + <kbd>COMMAND (⌘)</kbd> + <kbd>DELETE (⌫)</kbd>.
-10. To disable Maccy and ignore new copies, click on the menu icon with <kbd>OPTION (⌥)</kbd> pressed.
-11. To ignore only the next copy, click on the menu icon with <kbd>OPTION (⌥)</kbd> + <kbd>SHIFT (⇧)</kbd> pressed.
-12. To customize the behavior, check "Preferences…" window, or press <kbd>COMMAND (⌘)</kbd> + <kbd>,</kbd>.
+8. To pin the history item so that it remains on top of the list, press <kbd>OPTION (⌥)</kbd> + <kbd>P</kbd>. To unpin it, press <kbd>OPTION (⌥)</kbd> + <kbd>P</kbd> again. Unlike upstream, a pin carries no keyboard shortcut of its own, so there is no limit on how many items you can pin.
+9. To organize pinned items, open _Settings → Pins_: create folders, drag items to reorder them, and use the folder column to move an item into a folder. A folder shows up as a row in the popup and opens in a panel to the side on hover or click.
+10. When the history is longer than the configured number of visible rows (15 by default, see _Settings → Storage_), the rest hides behind a "show more" row. Search always looks through the whole history.
+11. To clear all unpinned items, select _Clear_ in the menu, or press <kbd>OPTION (⌥)</kbd> + <kbd>COMMAND (⌘)</kbd> + <kbd>DELETE (⌫)</kbd>. To clear all items including pinned, select _Clear_ in the menu with  <kbd>OPTION (⌥)</kbd> pressed, or press <kbd>SHIFT (⇧)</kbd> + <kbd>OPTION (⌥)</kbd> + <kbd>COMMAND (⌘)</kbd> + <kbd>DELETE (⌫)</kbd>.
+12. To disable Maccy and ignore new copies, click on the menu icon with <kbd>OPTION (⌥)</kbd> pressed.
+13. To ignore only the next copy, click on the menu icon with <kbd>OPTION (⌥)</kbd> + <kbd>SHIFT (⇧)</kbd> pressed.
+14. To customize the behavior, check "Preferences…" window, or press <kbd>COMMAND (⌘)</kbd> + <kbd>,</kbd>.
 
 ## Advanced
 
@@ -177,4 +207,6 @@ Also, I wanted to learn Swift and get acquainted with macOS application developm
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](./LICENSE), same as upstream. Maccy is written by
+[Alex Rodionov](https://github.com/p0deje); this fork only changes what
+[FORK.md](FORK.md) describes.
